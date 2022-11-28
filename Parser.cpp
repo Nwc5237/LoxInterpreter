@@ -36,6 +36,7 @@ bool Parser::check(TokenType type)
 	return type == tokens.at(cur)->getTokenType();
 }
 
+//Checks if the current token is in a list of TokenTypes --- returns true / false accordingly
 bool Parser::match(std::vector<TokenType> tokenTypes)
 {
 	for (TokenType type : tokenTypes)
@@ -50,10 +51,38 @@ bool Parser::match(std::vector<TokenType> tokenTypes)
 	return false;
 }
 
+/*
+Seems like the next thing to do will probably be to return null pointers when
+a parse fails. Then you can do an if(ptr) and if it evaluates to false, you
+can check the rest of the potential matches exist in the grammar
+*/
+
+PrintStmt* Parser::printStmt()
+{
+	PrintStmt* stmt = (PrintStmt*)malloc(sizeof(PrintStmt));
+	Expr* expr;
+	Token *print, *semicolon;
+
+	if (match(std::vector<TokenType>{PRINT}))
+		print = previous();
+	else
+		return nullptr;
+
+	if (!(expr = expression()))
+		return nullptr;
+
+	if (match(std::vector<TokenType>{SEMICOLON}))
+		semicolon = previous();
+	else
+		return nullptr;
+
+	*stmt = PrintStmt(print, expr, semicolon);
+	return stmt;
+}
 
 Expr* Parser::expression()
 {
-	return equality(); //this might still need the Expr(returned pointer) thing
+	return equality();
 }
 
 Expr* Parser::equality()
@@ -148,6 +177,11 @@ Expr* Parser::unary()
 
 		Token* op = previous();
 		expr = unary();
+
+		*un = Unary(op, expr);
+		expr = (Expr*)malloc(sizeof(Expr));
+		*expr = Expr(un);
+
 		return expr;
 	}
 	expr = primary();
@@ -169,17 +203,23 @@ Expr* Parser::primary()
 		*expr = Expr(literal);
 		return expr;
 
-	case RIGHT_PAREN: // probably want to start with the left paren you silly goose
+	case LEFT_PAREN:
 		Grouping* grouping = (Grouping *)malloc(sizeof(Grouping));
 		Token* leftParen = advance();
+
 		Expr* expr = expression();
+		
 		Token* rightParen;
+		
 		if (match(std::vector<TokenType>{RIGHT_PAREN}))
 		{
 			rightParen = previous();
 			*grouping = Grouping(leftParen, expr, rightParen);
-			return grouping;
+			expr = (Expr*)malloc(sizeof(Expr));
+			*expr = Expr(grouping);
+			return expr;
 		}
-		return grouping;
+		
+		printf("Error::missing right parenthesis on line:%d\n", tokens.at(cur)->getLine());
 	}
 }

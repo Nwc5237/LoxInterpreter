@@ -19,16 +19,12 @@ Failing expressions
 
 int main()
 {
-	Lexer lexer(std::string("=><! >=<=!====")); //looks like we have an error lexing with 
+	Lexer lexer(std::string("print 3*4+8;"));
 	lexer.lex();
 
-	for (Token t : lexer.getLexemes())
-	{
-		printf("%s\n", t.getLexeme().c_str());
-	}
-
 	Parser parser(lexer.getLexemesRef());
-	Expr* expr = parser.expression();
-	double x = *(double *) traverseExpr(expr);
+	//Expr* expr = parser.expression();
+	//double x = *(double *) traverseExpr(expr);
+	traversePrint(parser.printStmt());
 	printf("Oh dear God\n");
 }

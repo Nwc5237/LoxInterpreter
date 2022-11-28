@@ -269,6 +269,18 @@ bool Lexer::matchString(int* start, int* forward)
 	return sourceCode.at(*forward) == '\"';
 }
 
+//lexes out a keyword returns true when works and false on failure
+bool Lexer::keywordReader(std::string keyword, TokenType type, int* start, int* forward)
+{
+	if (sourceCode.substr(*start, keyword.length()) == keyword)
+	{
+		*forward += keyword.length();
+		createToken(type, start, forward);
+		return true;
+	}
+
+	return false;
+}
 
 //Match an identifier, then check if it's a reserve word
 bool Lexer::matchIdentifierKeyword(int* start, int* forward)
@@ -279,8 +291,6 @@ bool Lexer::matchIdentifierKeyword(int* start, int* forward)
 
 	while (in(sourceCode.at(*forward), "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789"))
 		(*forward)++;
-
-	(*forward)--;
 
 	if (sourceCode.substr(*start, *forward - *start) == "class")
 		createToken(CLASS, start, forward);
@@ -298,7 +308,7 @@ bool Lexer::matchIdentifierKeyword(int* start, int* forward)
 		createToken(NIL, start, forward);
 	else if (sourceCode.substr(*start, *forward - *start) == "or")
 		createToken(OR, start, forward);
-	else if (sourceCode.substr(*start, *forward - *start) == "print")
+	else if (sourceCode.substr(*start, *forward - *start) == "print") //TODO make a function that takes in the keyword string, checks if the next strlen(keyword) characters are the keyword, then sets forward correctly. pass the keyword and the token type
 		createToken(PRINT, start, forward);
 	else if (sourceCode.substr(*start, *forward - *start) == "return")
 		createToken(RETURN, start, forward);

@@ -49,4 +49,9 @@ public:
 	{
 		return this->tokenType;
 	}
+
+	int getLine()
+	{
+		return this->line;
+	}
 };

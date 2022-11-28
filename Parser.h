@@ -1,6 +1,7 @@
 #pragma once
 #include "Token.h"
 #include "Expr.h"
+#include "Stmt.h"
 #include <vector>
 
 class Parser
@@ -26,4 +27,5 @@ public:
 	Expr* factor();
 	Expr* unary();
 	Expr* primary();
+	PrintStmt* printStmt();
 };

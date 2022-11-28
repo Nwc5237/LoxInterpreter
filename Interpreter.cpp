@@ -35,33 +35,74 @@ double traverseBinary(Binary* binary)
 
 	if (binary->left)
 	{
-		left = *(double *) traverseExpr(binary->left);
+		left = *(double*)traverseExpr(binary->left);
 	}
+	else
+		goto BINARY_ERROR;
+
 	if (binary->op)
 	{
 		op = binary->op->getLexeme();
 	}
+	else
+		goto BINARY_ERROR;
+
 	if (binary->right)
 	{
 		right = *(double*) traverseExpr(binary->right);
 	}
+	else
+		goto BINARY_ERROR;
+
+
 
 	if (op == "*")
 	{
 		return left * right;
 	}
-	if (op == "/")
+	else if (op == "/")
 	{
 		return left / right;
 	}
-	if (op == "+")
+	else if (op == "+")
 	{
 		return left + right;
 	}
-	if (op == "-")
+	else if (op == "-")
 	{
 		return left - right;
 	}
+
+	else if (op == ">")
+	{
+		return left > right;
+	}
+
+	else if (op == "<")
+	{
+		return left < right;
+	}
+	else if (op == ">=")
+	{
+		return left >= right;
+	}
+	else if (op == "<=")
+	{
+		return left <= right;
+	}
+
+	else if (op == "!=") //might want to actually update this one with epsilon
+	{
+		return left != right;
+	}
+	else if (op == "==") //epsilon here as well
+	{
+		return left == right;
+	}
+
+BINARY_ERROR:
+	printf("Error evaluating binary expression.");
+	exit(-1);
 }
 
 double traverseLiteral(Literal* lit)
@@ -110,74 +151,10 @@ void *traverseExpr(Expr* expr)
 	return exprVal;
 }
 
-/*void traverseUnary(Unary* unary)
+void traversePrint(PrintStmt* stmt)
 {
-	if (unary->op)
+	if (stmt->printToken && stmt->expr && stmt->semicolon)
 	{
-		printf("%s ", unary->op->getLexeme().c_str());
-	}
-	if (unary->expr)
-	{
-		traverseTree(unary->expr);
+		printf("%f\n", *(double *) traverseExpr(stmt->expr));
 	}
 }
-
-void traverseBinary(Binary* binary)
-{
-	if (binary->left)
-	{
-		traverseTree(binary->left);
-	}
-	if (binary->op)
-	{
-		printf("%s ", binary->op->getLexeme().c_str());
-	}
-	if (binary->right)
-	{
-		traverseTree(binary->right);
-	}
-}
-
-void traverseLiteral(Literal* lit)
-{
-	if (lit->literal)
-	{
-		printf("%s ", lit->literal->getLexeme().c_str());
-	}
-}
-
-void traverseGrouping(Grouping* grouping)
-{
-	if (grouping->leftParen)
-	{
-		printf("%s ", grouping->leftParen->getLexeme().c_str());
-	}
-	if (grouping->expr)
-	{
-		traverseTree(grouping->expr);
-	}
-	if (grouping->rightParen)
-	{
-		printf("%s ", grouping->rightParen->getLexeme().c_str());
-	}
-}
-
-void traverseTree(Expr* expr)
-{
-	if (expr->unary)
-	{
-		traverseUnary(expr->unary);
-	}
-	if (expr->binary)
-	{
-		traverseBinary(expr->binary);
-	}
-	if (expr->literal)
-	{
-		traverseLiteral(expr->literal);
-	}
-	if (expr->grouping)
-	{
-		traverseGrouping(expr->grouping);
-	}
-}*/

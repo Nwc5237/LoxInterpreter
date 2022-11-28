@@ -29,4 +29,5 @@ private:
 	bool matchIdentifierKeyword(int* start, int* forward);
 	void resetForward(int* start, int* forward);
 	void trailingEqualsLexemeCheck(char op, int* start, int* forward);
+	bool keywordReader(std::string keyword, TokenType type, int* start, int* forward);
 };
